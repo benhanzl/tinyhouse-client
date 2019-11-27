@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useReducer } from "react";
 import { server } from "./server";
 
 interface State<TData> {
@@ -11,8 +11,32 @@ interface QueryResult<TData> extends State<TData> {
   refetch: () => void;
 }
 
+type Action<TData> =
+  | { type: "FETCH" }
+  | { type: "FETCH_SUCCESS"; payload: TData }
+  | { type: "FETCH_ERROR" };
+
+const reducer = <TData>() => (state: State<TData>, action: Action<TData>) => {
+  switch (action.type) {
+    case "FETCH":
+      return { ...state, loading: true };
+    case "FETCH_SUCCESS":
+      return {
+        ...state,
+        data: action.payload,
+        loading: false,
+        error: false
+      };
+    case "FETCH_ERROR":
+      return { ...state, loading: false, error: true };
+    default:
+      throw new Error();
+  }
+};
+
 export const useQuery = <TData = any>(query: string): QueryResult<TData> => {
-  const [state, setState] = useState<State<TData>>({
+  const fetchReducer = reducer<TData>();
+  const [state, dispatch] = useReducer(fetchReducer, {
     data: null,
     loading: false,
     error: false
@@ -21,7 +45,7 @@ export const useQuery = <TData = any>(query: string): QueryResult<TData> => {
   const fetch = useCallback(() => {
     const fetchApi = async () => {
       try {
-        setState({ data: null, loading: true, error: false });
+        dispatch({ type: "FETCH" });
 
         const { data, errors } = await server.fetch<TData>({
           query
@@ -31,10 +55,10 @@ export const useQuery = <TData = any>(query: string): QueryResult<TData> => {
           throw new Error(errors[0].message);
         }
 
-        setState({ data, loading: false, error: false });
-      } catch (err) {
-        setState({ data: null, loading: false, error: true });
-        throw console.error(err);
+        dispatch({ type: "FETCH_SUCCESS", payload: data });
+      } catch (error) {
+        dispatch({ type: "FETCH_ERROR" });
+        throw console.error(error);
       }
     };
 
