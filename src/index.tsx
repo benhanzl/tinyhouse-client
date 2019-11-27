@@ -3,6 +3,7 @@ import React from "react";
 import { ApolloProvider } from "@apollo/react-hooks";
 import { render } from "react-dom";
 import { Listings } from "./sections";
+import "./styles/index.css";
 import * as serviceWorker from "./serviceWorker";
 
 const client = new ApolloClient({
