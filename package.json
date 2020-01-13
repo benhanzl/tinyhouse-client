@@ -11,7 +11,7 @@
     "@types/react": "16.9.16",
     "@types/react-dom": "16.9.4",
     "antd": "^3.26.2",
-    "apollo-boost": "^0.4.4",
+    "apollo-boost": "^0.4.7",
     "graphql": "^14.5.8",
     "react": "^16.12.0",
     "react-dom": "^16.12.0",
