@@ -36,7 +36,7 @@ const App = () => {
   return (
     <Router>
       <Affix offsetTop={0} className="app__affix-header">
-        <AppHeader viewer={viewer} />
+        <AppHeader viewer={viewer} setViewer={setViewer} />
       </Affix>
       <Switch>
         <Route exact path="/" component={Home} />
